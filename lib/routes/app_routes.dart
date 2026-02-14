@@ -11,4 +11,5 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String similarBooks = '/similar-books';
   static const String reader = '/reader';
+  static const String prescriber = '/prescriber';
 }

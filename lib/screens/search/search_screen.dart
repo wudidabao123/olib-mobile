@@ -42,6 +42,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   bool _isLoadingMore = false;
   bool _hasSearched = false;
   bool _isListView = false;
+  bool _isFirstLoading = false; // 首次加载状态
 
   @override
   void initState() {
@@ -109,11 +110,19 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             _allBooks.addAll(newBooks);
           }
           _isLoadingMore = false;
+          _isFirstLoading = false;
+        });
+      } else {
+        // API returned but no valid data
+        setState(() {
+          _isLoadingMore = false;
+          _isFirstLoading = false;
         });
       }
     } catch (e) {
       setState(() {
         _isLoadingMore = false;
+        _isFirstLoading = false;
       });
     }
   }
@@ -165,6 +174,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       _currentPage = 1;
       _totalPages = 1;
       _hasSearched = true;
+      _isFirstLoading = true;
     });
     
     // Fetch first page
@@ -213,6 +223,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         _searchController.clear();
                         setState(() {
                           _currentSearch = null;
+                          _hasSearched = false;
+                          _allBooks = [];
+                          _isFirstLoading = false;
                         });
                       },
                     ),
@@ -242,14 +255,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     title: l10n.get('start_searching'),
                     message: l10n.get('enter_search_hint'),
                   )
-                : _allBooks.isEmpty && !_isLoadingMore
-                    ? (_currentSearch != null 
-                        ? LoadingWidget(message: l10n.get('searching_books'))
-                        : EmptyState(
-                            icon: Icons.search_off,
-                            title: l10n.get('no_results'),
-                            message: l10n.get('try_different_keywords'),
-                          ))
+                : _isFirstLoading
+                    ? LoadingWidget(message: l10n.get('searching_books'))
                     : _allBooks.isEmpty
                         ? EmptyState(
                             icon: Icons.search_off,

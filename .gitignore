@@ -70,7 +70,6 @@ app.*.map.json
 api_dump/
 test/
 debug/
-dev_docs/
 publish_page/
 
 # ========================================

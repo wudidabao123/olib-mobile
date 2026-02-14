@@ -219,152 +219,227 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
     final user = authState.user;
     final theme = Theme.of(context);
 
-    return CustomScrollView(
-      slivers: [
-        // Modern Hero Section
-        SliverToBoxAdapter(
-          child: Stack(
-            children: [
-              // Background Gradient
-              Container(
-                height: 380, // Taller hero
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppColors.primary.withOpacity(0.05),
-                      theme.scaffoldBackgroundColor,
+    return Column(
+      children: [
+        // ========== 固定头部区域 ==========
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.primary.withOpacity(0.05),
+                theme.scaffoldBackgroundColor,
+              ],
+            ),
+          ),
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getGreeting(context),
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: AppColors.textSecondary,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            user?.name ?? "Book Lover",
+                            style: theme.textTheme.displaySmall?.copyWith(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.settings_outlined),
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(AppRoutes.settings);
+                          },
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
                     ],
                   ),
-                ),
-              ),
 
-              // Content
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  const SizedBox(height: 24),
+
+                  // Search Bar Trigger
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed(AppRoutes.search),
+                    child: Container(
+                      height: 54,
+                      padding: const EdgeInsets.only(left: 20, right: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Row(
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _getGreeting(context),
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 16,
-                                ),
+                          const Icon(Icons.search, color: AppColors.textSecondary),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              AppLocalizations.of(context).get('search_for_books'),
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 16,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                user?.name ?? "Book Lover",
-                                style: theme.textTheme.displaySmall?.copyWith(
-                                  color: AppColors.textPrimary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 28,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                           Container(
+                            width: 40,
+                            height: 40,
                             decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // AI 智阅锦囊入口
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed(AppRoutes.prescriber),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withOpacity(0.9),
+                            AppColors.primary,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.auto_awesome,
                               color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  Localizations.localeOf(context).languageCode == 'zh'
+                                      ? '不知道读什么？'
+                                      : "Don't know what to read?",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 1),
+                                Text(
+                                  Localizations.localeOf(context).languageCode == 'zh'
+                                      ? '让 AI 帮你开锦囊 ✨'
+                                      : 'Let AI pick books for you ✨',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.85),
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ],
                             ),
-                            child: IconButton(
-                              icon: const Icon(Icons.settings_outlined),
-                              onPressed: () {
-                                Navigator.of(context).pushNamed(AppRoutes.settings);
-                              },
-                              color: AppColors.textPrimary,
-                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: Colors.white.withOpacity(0.7),
+                            size: 16,
                           ),
                         ],
                       ),
+                    ),
+                  ),
 
-                      const SizedBox(height: 32),
+                  const SizedBox(height: 20),
 
-                      // Search Bar Trigger
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pushNamed(AppRoutes.search),
-                        child: Container(
-                          height: 60,
-                          padding: const EdgeInsets.only(left: 20, right: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.search, color: AppColors.textSecondary),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  AppLocalizations.of(context).get('search_for_books'),
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                              // Blue Search Button
-                              Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  borderRadius: BorderRadius.circular(22),
-                                ),
-                                child: const Icon(Icons.arrow_forward, color: Colors.white),
-                              ),
-                            ],
-                          ),
+                  // 推荐书籍标题
+                  Row(
+                    children: [
+                      const Icon(Icons.local_fire_department_rounded,
+                          color: AppColors.primary, size: 22),
+                      const SizedBox(width: 6),
+                      Text(
+                        Localizations.localeOf(context).languageCode == 'zh'
+                            ? '为你推荐'
+                            : 'Recommended',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
                         ),
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      // Segmented Control (Visual Header)
-                      Row(
-                        children: [
-                          _buildSegmentChip(context, 'Trending', isActive: true),
-                          const SizedBox(width: 12),
-                          _buildSegmentChip(context, 'New Releases', isActive: false),
-                        ],
                       ),
                     ],
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
 
-        const SliverPadding(padding: EdgeInsets.only(bottom: 16)),
-
-        _buildBookGrid(ref.watch(recommendedBooksProvider)),
-
-        const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
+        // ========== 可滚动书籍网格 ==========
+        Expanded(
+          child: _buildBookGrid(ref.watch(recommendedBooksProvider)),
+        ),
       ],
     );
   }
@@ -373,87 +448,51 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
     return booksAsync.when(
       data: (books) {
         if (books.isEmpty) {
-          return const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.all(40.0),
-              child: EmptyState(
-                icon: Icons.book_outlined,
-                title: 'No books found',
-              ),
+          return const Padding(
+            padding: EdgeInsets.all(40.0),
+            child: EmptyState(
+              icon: Icons.book_outlined,
+              title: 'No books found',
             ),
           );
         }
 
-        return SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 220,
-              childAspectRatio: 0.62, // Taller cards
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 20,
-            ),
-            delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                final book = books[index];
-                return BookCard(
-                  book: book,
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      AppRoutes.bookDetail,
-                      arguments: book,
-                    );
-                  },
+        return GridView.builder(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 220,
+            childAspectRatio: 0.62,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 20,
+          ),
+          itemCount: books.length > 20 ? 20 : books.length,
+          itemBuilder: (context, index) {
+            final book = books[index];
+            return BookCard(
+              book: book,
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  AppRoutes.bookDetail,
+                  arguments: book,
                 );
               },
-              childCount: books.length > 20 ? 20 : books.length,
-            ),
-          ),
+            );
+          },
         );
       },
-      loading: () => const SliverToBoxAdapter(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 40),
-          child: LoadingWidget(message: 'Loading trending books...'),
-        ),
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 40),
+        child: LoadingWidget(message: 'Loading trending books...'),
       ),
-      error: (error, stack) => SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: EmptyState(
-            icon: Icons.error_outline,
-            title: 'Could not load books',
-            message: 'Please check your connection',
-          ),
+      error: (error, stack) => const Padding(
+        padding: EdgeInsets.all(20),
+        child: EmptyState(
+          icon: Icons.error_outline,
+          title: 'Could not load books',
+          message: 'Please check your connection',
         ),
       ),
     );
   }
 
-  Widget _buildSegmentChip(BuildContext context, String label, {required bool isActive}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.primary : Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: isActive
-            ? [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          )
-        ]
-            : null,
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isActive ? Colors.white : AppColors.textSecondary,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-        ),
-      ),
-    );
-  }
 }
