@@ -341,7 +341,7 @@ class SettingsScreen extends ConsumerWidget {
                   ListTile(
                     leading: const Icon(Icons.info_outline),
                     title: Text(AppLocalizations.of(context).get('version')),
-                    trailing: const Text('1.0.4'),
+                    trailing: const Text('1.0.6'),
                   ),
                   ListTile(
                     leading: const Icon(Icons.share_rounded),
