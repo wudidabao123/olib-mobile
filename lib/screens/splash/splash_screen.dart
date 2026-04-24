@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import '../../providers/auth_provider.dart';
 import '../../providers/domain_provider.dart';
+import '../../providers/speed_test_provider.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 
@@ -20,6 +21,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    // Fire-and-forget: start background speed test for all domains
+    Future.microtask(() => ref.read(speedTestProvider.notifier).runTest());
     _initialize();
   }
 

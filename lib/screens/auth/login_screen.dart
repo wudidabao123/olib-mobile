@@ -136,17 +136,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final error = ref.read(authProvider).error;
       final locale = Localizations.localeOf(context).languageCode;
       final isZh = locale == 'zh';
-      
-      AwesomeDialog(
-        context: context,
-        dialogType: DialogType.error,
-        animType: AnimType.bottomSlide,
-        title: isZh ? '登录失败' : 'Login Failed',
-        desc: isZh ? '用户未注册或账号密码错误' : 'User not registered or incorrect credentials',
-        btnOkText: isZh ? '确定' : 'OK',
-        btnOkColor: AppColors.primary,
-        btnOkOnPress: () {},
-      ).show();
+
+      if (error == 'cf_blocked') {
+        // Cloudflare interception — suggest switching network line
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.warning,
+          animType: AnimType.bottomSlide,
+          title: isZh ? '线路被拦截' : 'Line Blocked',
+          desc: isZh
+              ? '当前线路被 Cloudflare 拦截，请切换其他线路后重试。'
+              : 'Current line is blocked by Cloudflare. Please switch to another line and try again.',
+          btnCancelText: isZh ? '关闭' : 'Close',
+          btnCancelOnPress: () {},
+          btnOkText: isZh ? '切换线路' : 'Switch Line',
+          btnOkColor: AppColors.primary,
+          btnOkOnPress: () {
+            showDialog(
+              context: context,
+              builder: (_) => const DomainSelectionDialog(),
+            );
+          },
+        ).show();
+      } else {
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.bottomSlide,
+          title: isZh ? '登录失败' : 'Login Failed',
+          desc: isZh ? '用户未注册或账号密码错误' : 'User not registered or incorrect credentials',
+          btnOkText: isZh ? '确定' : 'OK',
+          btnOkColor: AppColors.primary,
+          btnOkOnPress: () {},
+        ).show();
+      }
     }
   }
 
