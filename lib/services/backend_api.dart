@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import '../config/env.dart';
+import '../models/backend_response.dart';
 
-/// 后端 API 客户端 — 封装 /auth/* 接口
 class BackendApi {
   late final Dio _dio;
 
@@ -14,9 +14,7 @@ class BackendApi {
     ));
   }
 
-  /// 设备注册 — POST /auth/register
-  /// 返回 {token, user_id, role}
-  Future<Map<String, dynamic>> register({
+  Future<RegisterResponse> register({
     required String deviceId,
     String platform = 'android',
   }) async {
@@ -24,34 +22,29 @@ class BackendApi {
       'device_id': deviceId,
       'platform': platform,
     });
-    return _parseResponse(response);
+    return _parseResponse(response, RegisterResponse.fromJson);
   }
 
-  /// 获取授权二维码 — GET /auth/qrcode
-  /// 返回 {qr_url, expire_seconds}
-  Future<Map<String, dynamic>> getQrCode(String token) async {
+  Future<QrCodeResponse> getQrCode(String token) async {
     final response = await _dio.get(
       '/auth/qrcode',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    return _parseResponse(response);
+    return _parseResponse(response, QrCodeResponse.fromJson);
   }
 
-  /// 轮询授权状态 — GET /auth/status
-  /// 返回 {status, token?, user_id?}
-  Future<Map<String, dynamic>> checkStatus(String token) async {
+  Future<AuthStatusResponse> checkStatus(String token) async {
     final response = await _dio.get(
       '/auth/status',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    return _parseResponse(response);
+    return _parseResponse(response, AuthStatusResponse.fromJson);
   }
 
-  /// 解析通用响应 {success, data, error}
-  Map<String, dynamic> _parseResponse(Response response) {
+  T _parseResponse<T>(Response response, T Function(Map<String, dynamic>) fromJson) {
     final body = response.data as Map<String, dynamic>;
     if (body['success'] == true && body['data'] != null) {
-      return body['data'] as Map<String, dynamic>;
+      return fromJson(body['data'] as Map<String, dynamic>);
     }
     throw Exception(body['error'] ?? '请求失败');
   }

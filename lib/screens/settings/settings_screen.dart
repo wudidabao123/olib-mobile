@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
@@ -20,7 +19,6 @@ import '../../widgets/domain_selector.dart';
 import '../../l10n/app_localizations.dart';
 import '../../utils/file_utils.dart';
 import '../../utils/locale_utils.dart' as locale_utils;
-import '../../theme/app_theme.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -79,7 +77,7 @@ class SettingsScreen extends ConsumerWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.accent.withOpacity(0.1),
+                          color: AppColors.accent.withValues(alpha:0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -453,7 +451,7 @@ class SettingsScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -606,7 +604,7 @@ class SettingsScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
+                          color: Colors.green.withValues(alpha:0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -625,7 +623,7 @@ class SettingsScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
+                          color: Colors.blue.withValues(alpha:0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -770,7 +768,7 @@ class SettingsScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -979,18 +977,5 @@ class SettingsScreen extends ConsumerWidget {
       'native': '繁體中文',
       'english': 'Traditional Chinese'
     },
-    'fr': {'flag': '🇫🇷', 'native': 'Français', 'english': 'French'},
-    'es': {'flag': '🇪🇸', 'native': 'Español', 'english': 'Spanish'},
-    'de': {'flag': '🇩🇪', 'native': 'Deutsch', 'english': 'German'},
-    'pt': {'flag': '🇧🇷', 'native': 'Português', 'english': 'Portuguese'},
-    'ru': {'flag': '🇷🇺', 'native': 'Русский', 'english': 'Russian'},
-    'ja': {'flag': '🇯🇵', 'native': '日本語', 'english': 'Japanese'},
-    'ko': {'flag': '🇰🇷', 'native': '한국어', 'english': 'Korean'},
-    'ar': {'flag': '🇸🇦', 'native': 'العربية', 'english': 'Arabic'},
-    'it': {'flag': '🇮🇹', 'native': 'Italiano', 'english': 'Italian'},
-    'tr': {'flag': '🇹🇷', 'native': 'Türkçe', 'english': 'Turkish'},
-    'vi': {'flag': '🇻🇳', 'native': 'Tiếng Việt', 'english': 'Vietnamese'},
-    'th': {'flag': '🇹🇭', 'native': 'ไทย', 'english': 'Thai'},
-    'id': {'flag': '🇮🇩', 'native': 'Bahasa Indonesia', 'english': 'Indonesian'},
   };
 }

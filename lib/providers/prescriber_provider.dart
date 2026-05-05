@@ -114,13 +114,8 @@ class PrescriberNotifier extends StateNotifier<PrescriberState> {
         );
 
         Book? matchedBook;
-        final success = response['success'];
-        if ((success == true || success == 1) &&
-            response.containsKey('books')) {
-          final booksData = response['books'] as List<dynamic>;
-          if (booksData.isNotEmpty) {
-            matchedBook = Book.fromJson(booksData.first);
-          }
+        if (response.success && response.data != null && response.data!.isNotEmpty) {
+          matchedBook = response.data!.first;
         }
 
         // 更新匹配结果 — 使用最新 state

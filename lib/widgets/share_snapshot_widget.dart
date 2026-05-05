@@ -123,7 +123,7 @@ class ShareSnapshotWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.15),
+                            color: Colors.black.withValues(alpha:0.15),
                             offset: const Offset(4, 4),
                             blurRadius: 8,
                           ),
@@ -391,7 +391,7 @@ class ShareSnapshotWidget extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
               child: Container(
-                color: Colors.white.withOpacity(0.6), // 60% opacity white overlay
+                color: Colors.white.withValues(alpha:0.6), // 60% opacity white overlay
               ),
             ),
           ),
@@ -401,7 +401,7 @@ class ShareSnapshotWidget extends StatelessWidget {
               margin: const EdgeInsets.all(24),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha:0.85),
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: const [
                   BoxShadow(
@@ -542,7 +542,8 @@ class ShareSnapshotWidget extends StatelessWidget {
       data: qrData!,
       version: QrVersions.auto,
       size: size,
-      foregroundColor: color,
+      eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: color),
+      dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: color),
       gapless: false,
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../models/api_response.dart';
 import '../models/user.dart';
 import '../services/auth_storage.dart';
 import '../services/zlibrary_api.dart';
@@ -39,34 +40,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _init();
   }
 
-  /// Initialize - restore session from stored credentials
-  /// Now waits for API verification before setting authenticated state
   Future<void> _init() async {
     state = state.copyWith(isLoading: true);
-    
+
     try {
       final credentials = await _storage.getCredentials();
       final userId = credentials['userId'];
       final userKey = credentials['userKey'];
 
       if (userId != null && userKey != null) {
-        // Verify stored credentials by calling API
         try {
           final response = await _api.getProfile();
-          final success = response['success'];
-          if (success == true || success == 1) {
-            // API verification succeeded - use actual user data
-            final userData = response['user'] as Map<String, dynamic>;
-            final user = User.fromJson(userData);
-            state = AuthState(user: user);
+          if (response.success && response.data != null) {
+            state = AuthState(user: response.data);
           } else {
-            // API returned failure - credentials invalid, clear and require login
             await _storage.clearCredentials();
             state = AuthState();
           }
         } catch (e) {
-          // Network error - fall back to stored credentials
-          // Allow offline access with cached user info
           final email = credentials['email'];
           final name = credentials['name'];
           final user = User(
@@ -79,7 +70,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
           print('Profile verification failed, using cached credentials: $e');
         }
       } else {
-        // No stored credentials, need login
         state = AuthState();
       }
     } catch (e) {
@@ -87,19 +77,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Login with email and password
   Future<bool> login(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
       final response = await _api.login(email, password);
-      final success = response['success'];
 
-      if (success == true || success == 1) {
-        final userData = response['user'] as Map<String, dynamic>;
-        final user = User.fromJson(userData);
+      if (response.success && response.data != null) {
+        final user = response.data!;
 
-        // Save credentials including password
         await _storage.saveCredentials(
           userId: user.id,
           userKey: user.remixUserkey,
@@ -111,10 +97,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         state = AuthState(user: user);
         return true;
       } else {
-        final errorMsg = response['error']?.toString() ?? 
-                        response['message']?.toString() ?? 
-                        'Login failed';
-        state = AuthState(error: errorMsg);
+        state = AuthState(error: response.error ?? 'Login failed');
         return false;
       }
     } catch (e) {
@@ -123,25 +106,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Login with token
   Future<bool> loginWithToken(String userId, String userKey) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
       final response = await _api.loginWithToken(userId, userKey);
-      final success = response['success'];
 
-      if (success == true || success == 1) {
-        final userData = response['user'] as Map<String, dynamic>;
-        final user = User.fromJson(userData);
-
-        state = AuthState(user: user);
+      if (response.success && response.data != null) {
+        state = AuthState(user: response.data);
         return true;
       } else {
-        final errorMsg = response['error']?.toString() ?? 
-                        response['message']?.toString() ?? 
-                        'Token login failed';
-        state = AuthState(error: errorMsg);
+        state = AuthState(error: response.error ?? 'Token login failed');
         return false;
       }
     } catch (e) {
@@ -150,8 +125,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Send verification code for registration
-  Future<Map<String, dynamic>> sendVerificationCode(
+  Future<ApiResponse<void>> sendVerificationCode(
     String email,
     String password,
     String name,
@@ -159,7 +133,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     return await _api.sendCode(email, password, name);
   }
 
-  /// Complete registration with verification code
   Future<bool> register(
     String email,
     String password,
@@ -170,16 +143,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     try {
       final response = await _api.verifyCode(email, password, name, code);
-      final success = response['success'];
 
-      if (success == true || success == 1) {
-        // After registration, login
+      if (response.success) {
         return await login(email, password);
       } else {
-        final errorMsg = response['error']?.toString() ?? 
-                        response['message']?.toString() ?? 
-                        'Registration failed';
-        state = AuthState(error: errorMsg);
+        state = AuthState(error: response.error ?? 'Registration failed');
         return false;
       }
     } catch (e) {
@@ -188,35 +156,28 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Logout
   Future<void> logout() async {
     await _storage.clearCredentials();
     state = AuthState();
   }
 
-  /// Refresh user profile
   Future<void> refreshProfile() async {
     if (!state.isAuthenticated) return;
 
     try {
       final response = await _api.getProfile();
-      final success = response['success'];
-      if (success == true || success == 1) {
-        final userData = response['user'] as Map<String, dynamic>;
-        final user = User.fromJson(userData);
-        state = AuthState(user: user);
+      if (response.success && response.data != null) {
+        state = AuthState(user: response.data);
       }
     } catch (e) {
       // Keep existing state on error
     }
   }
 
-  /// Get all saved accounts
   Future<List<Map<dynamic, dynamic>>> getSavedAccounts() async {
     return await _storage.getStoredAccounts();
   }
 
-  /// Switch to a saved account
   Future<bool> switchAccount(Map<String, dynamic> account) async {
     final userId = account['userId'];
     final userKey = account['userKey'];
@@ -231,7 +192,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     return false;
   }
 
-  /// Remove a saved account
   Future<void> removeAccount(String userId) async {
     await _storage.removeAccount(userId);
   }

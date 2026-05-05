@@ -127,7 +127,7 @@ class _QrAuthScreenState extends ConsumerState<QrAuthScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.primary.withOpacity(0.08),
+              AppColors.primary.withValues(alpha:0.08),
               Colors.white,
             ],
           ),
@@ -173,7 +173,7 @@ class _QrAuthScreenState extends ConsumerState<QrAuthScreen> {
                           width: 72,
                           height: 72,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF07C160).withOpacity(0.1),
+                            color: const Color(0xFF07C160).withValues(alpha:0.1),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -367,7 +367,7 @@ class _QrAuthScreenState extends ConsumerState<QrAuthScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha:0.06),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),

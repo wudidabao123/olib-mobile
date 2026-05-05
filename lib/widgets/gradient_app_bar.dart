@@ -35,7 +35,7 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1.0),
         child: Container(
-          color: Colors.black.withOpacity(0.05), // Subtle separator
+          color: Colors.black.withValues(alpha:0.05), // Subtle separator
           height: 1.0,
         ),
       ),

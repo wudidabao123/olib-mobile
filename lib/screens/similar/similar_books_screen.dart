@@ -56,22 +56,18 @@ class _SimilarBooksScreenState extends ConsumerState<SimilarBooksScreen> {
     });
     
     try {
-      final response = await api.Similar(args.bookId.toString(), args.hashId);
-      final success = response['success'];
-      
-      if ((success == true || success == 1) && response.containsKey('books')) {
-        final booksData = response['books'] as List<dynamic>;
-        final books = booksData.map((json) => Book.fromJson(json)).toList();
-        
+      final response = await api.similar(args.bookId.toString(), args.hashId);
+
+      if (response.success && response.data != null) {
         setState(() {
-          _books = books;
+          _books = response.data!;
           _isLoading = false;
         });
       } else {
         setState(() {
           _isLoading = false;
           _hasError = true;
-          _errorMessage = response['error']?.toString() ?? 'Failed to load similar books';
+          _errorMessage = response.error ?? 'Failed to load similar books';
         });
       }
     } catch (e) {
@@ -102,7 +98,7 @@ class _SimilarBooksScreenState extends ConsumerState<SimilarBooksScreen> {
               color: Theme.of(context).cardColor,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha:0.05),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),

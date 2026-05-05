@@ -246,9 +246,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                     shape: BoxShape.circle,
                                     gradient: RadialGradient(
                                       colors: [
-                                        Colors.white.withOpacity(0.12),
-                                        Colors.white.withOpacity(0.04),
-                                        Colors.white.withOpacity(0.0),
+                                        Colors.white.withValues(alpha:0.12),
+                                        Colors.white.withValues(alpha:0.04),
+                                        Colors.white.withValues(alpha:0.0),
                                       ],
                                       stops: const [0.0, 0.6, 1.0],
                                     ),
@@ -261,9 +261,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                 height: 100,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Colors.white.withOpacity(0.15),
+                                  color: Colors.white.withValues(alpha:0.15),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.25),
+                                    color: Colors.white.withValues(alpha:0.25),
                                     width: 1.5,
                                   ),
                                 ),
@@ -307,7 +307,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               Text(
                                 'Your Open Library',
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.6),
+                                  color: Colors.white.withValues(alpha:0.6),
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   letterSpacing: 1.5,
@@ -380,13 +380,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             decoration: BoxDecoration(
                               color: _networkOk
                                   ? const Color(0xFF4ADE80)
-                                  : Colors.white.withOpacity(0.5),
+                                  : Colors.white.withValues(alpha:0.5),
                               shape: BoxShape.circle,
                               boxShadow: _networkOk
                                   ? [
                                       BoxShadow(
                                         color: const Color(0xFF4ADE80)
-                                            .withOpacity(0.6),
+                                            .withValues(alpha:0.6),
                                         blurRadius: 8,
                                         spreadRadius: 1,
                                       ),
@@ -398,7 +398,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           Text(
                             _statusText,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha:0.7),
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                               letterSpacing: 0.3,
@@ -427,7 +427,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       child: Text(
                         'v1.0.6',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.4),
+                          color: Colors.white.withValues(alpha:0.4),
                           fontSize: 11,
                           letterSpacing: 0.5,
                         ),
@@ -461,7 +461,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   height: 200,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.03),
+                    color: Colors.white.withValues(alpha:0.03),
                   ),
                 ),
               ),
@@ -476,7 +476,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   height: 260,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.025),
+                    color: Colors.white.withValues(alpha:0.025),
                   ),
                 ),
               ),
@@ -491,7 +491,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.02),
+                    color: Colors.white.withValues(alpha:0.02),
                   ),
                 ),
               ),
@@ -519,7 +519,7 @@ class _RingSpinnerPainter extends CustomPainter {
 
     // Background ring (very faint)
     final bgPaint = Paint()
-      ..color = color.withOpacity(0.15)
+      ..color = color.withValues(alpha:0.15)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5
       ..strokeCap = StrokeCap.round;
@@ -528,7 +528,7 @@ class _RingSpinnerPainter extends CustomPainter {
 
     // Spinning arc with gradient opacity
     final arcPaint = Paint()
-      ..color = color.withOpacity(0.9)
+      ..color = color.withValues(alpha:0.9)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5
       ..strokeCap = StrokeCap.round;
@@ -549,7 +549,7 @@ class _RingSpinnerPainter extends CustomPainter {
 
     // Secondary arc (shorter, opposite side, dimmer)
     final arcPaint2 = Paint()
-      ..color = color.withOpacity(0.4)
+      ..color = color.withValues(alpha:0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5
       ..strokeCap = StrokeCap.round;

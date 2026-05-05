@@ -63,7 +63,7 @@ class BookDetailScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                      color: Colors.black.withValues(alpha:isDark ? 0.3 : 0.08),
                       blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),
@@ -219,11 +219,11 @@ class BookDetailScreen extends ConsumerWidget {
                 imageUrl: book.cover!,
                 fit: BoxFit.cover,
                 errorWidget: (_, __, ___) => Container(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha:0.3),
                 ),
               )
             else
-              Container(color: AppColors.primary.withOpacity(0.3)),
+              Container(color: AppColors.primary.withValues(alpha:0.3)),
 
             // ── Layer 2: Blur Filter ──
             ClipRect(
@@ -240,9 +240,9 @@ class BookDetailScreen extends ConsumerWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.4),
-                    Colors.black.withOpacity(0.2),
-                    (isDark ? const Color(0xFF121212) : AppColors.background).withOpacity(0.8),
+                    Colors.black.withValues(alpha:0.4),
+                    Colors.black.withValues(alpha:0.2),
+                    (isDark ? const Color(0xFF121212) : AppColors.background).withValues(alpha:0.8),
                     isDark ? const Color(0xFF121212) : AppColors.background,
                   ],
                   stops: const [0.0, 0.3, 0.7, 1.0],
@@ -274,13 +274,13 @@ class BookDetailScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha:0.5),
             blurRadius: 24,
             offset: const Offset(8, 12),
             spreadRadius: -4,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha:0.2),
             blurRadius: 40,
             offset: const Offset(0, 20),
           ),
@@ -301,7 +301,7 @@ class BookDetailScreen extends ConsumerWidget {
 
   Widget _buildCoverPlaceholder(Book book) {
     return Container(
-      color: AppColors.primary.withOpacity(0.15),
+      color: AppColors.primary.withValues(alpha:0.15),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -380,8 +380,8 @@ class BookDetailScreen extends ConsumerWidget {
 
   Widget _capsule(IconData icon, String text, bool isDark, {bool highlight = false}) {
     final bgColor = highlight
-        ? AppColors.primary.withOpacity(0.12)
-        : (isDark ? Colors.white.withOpacity(0.08) : const Color(0xFFF0F2F5));
+        ? AppColors.primary.withValues(alpha:0.12)
+        : (isDark ? Colors.white.withValues(alpha:0.08) : const Color(0xFFF0F2F5));
     final fgColor = highlight
         ? AppColors.primary
         : (isDark ? Colors.white70 : AppColors.textSecondary);
@@ -418,10 +418,10 @@ class BookDetailScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xFF2EC4B6).withOpacity(0.15),
+        color: const Color(0xFF2EC4B6).withValues(alpha:0.15),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF2EC4B6).withOpacity(0.3),
+          color: const Color(0xFF2EC4B6).withValues(alpha:0.3),
           width: 1,
         ),
       ),
@@ -458,13 +458,13 @@ class BookDetailScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: isDark
-              ? Colors.white.withOpacity(0.06)
-              : AppColors.primary.withOpacity(0.06),
+              ? Colors.white.withValues(alpha:0.06)
+              : AppColors.primary.withValues(alpha:0.06),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isDark
-                ? Colors.white.withOpacity(0.1)
-                : AppColors.primary.withOpacity(0.15),
+                ? Colors.white.withValues(alpha:0.1)
+                : AppColors.primary.withValues(alpha:0.15),
           ),
         ),
         child: Row(
@@ -472,7 +472,7 @@ class BookDetailScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.12),
+                color: AppColors.primary.withValues(alpha:0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
@@ -538,7 +538,7 @@ class BookDetailScreen extends ConsumerWidget {
         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+            color: Colors.black.withValues(alpha:isDark ? 0.3 : 0.08),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
@@ -627,7 +627,7 @@ class BookDetailScreen extends ConsumerWidget {
           side: BorderSide(
             color: isCompleted
                 ? AppColors.success
-                : (isDark ? Colors.white30 : AppColors.primary.withOpacity(0.5)),
+                : (isDark ? Colors.white30 : AppColors.primary.withValues(alpha:0.5)),
             width: 1.5,
           ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

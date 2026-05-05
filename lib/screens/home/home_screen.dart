@@ -42,7 +42,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           color: Theme.of(context).colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha:0.05),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -228,7 +228,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                AppColors.primary.withOpacity(0.05),
+                AppColors.primary.withValues(alpha:0.05),
                 theme.scaffoldBackgroundColor,
               ],
             ),
@@ -271,7 +271,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha:0.05),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -301,7 +301,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
+                            color: Colors.black.withValues(alpha:0.08),
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -344,14 +344,14 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            AppColors.primary.withOpacity(0.9),
+                            AppColors.primary.withValues(alpha:0.9),
                             AppColors.primary,
                           ],
                         ),
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withValues(alpha:0.3),
                             blurRadius: 12,
                             offset: const Offset(0, 6),
                           ),
@@ -363,7 +363,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                             width: 38,
                             height: 38,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha:0.2),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
@@ -393,7 +393,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                                       ? '让 AI 帮你开锦囊 ✨'
                                       : 'Let AI pick books for you ✨',
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.85),
+                                    color: Colors.white.withValues(alpha:0.85),
                                     fontSize: 12,
                                   ),
                                 ),
@@ -402,7 +402,7 @@ class _HomeTabState extends ConsumerState<_HomeTab> {
                           ),
                           Icon(
                             Icons.arrow_forward_ios_rounded,
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white.withValues(alpha:0.7),
                             size: 16,
                           ),
                         ],

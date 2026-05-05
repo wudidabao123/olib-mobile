@@ -107,12 +107,11 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
   /// 向后端确认 JWT 是否仍然有效
   Future<void> _refreshStatusFromServer(String jwt) async {
     try {
-      final data = await _api.checkStatus(jwt);
-      final serverStatus = data['status'] as String?;
+      final response = await _api.checkStatus(jwt);
 
-      if (serverStatus == 'authorized') {
-        final newToken = data['token'] as String? ?? jwt;
-        final userId = data['user_id'] as int?;
+      if (response.status == 'authorized') {
+        final newToken = response.token ?? jwt;
+        final userId = response.userId;
         await _saveAuth(newToken, 'authorized', userId ?? state.userId);
         if (mounted) {
           state = BackendAuthState(
@@ -128,7 +127,7 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
           state = BackendAuthState(
             status: BackendAuthStatus.unauthorized,
             jwt: jwt,
-            role: serverStatus,
+            role: response.status,
             userId: state.userId,
           );
         }
@@ -162,22 +161,18 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
   Future<void> register() async {
     try {
       final deviceId = await _getDeviceId();
-      final data = await _api.register(deviceId: deviceId);
+      final response = await _api.register(deviceId: deviceId);
 
-      final jwt = data['token'] as String;
-      final role = data['role'] as String;
-      final userId = data['user_id'] as int;
+      await _saveAuth(response.token, response.role, response.userId);
 
-      await _saveAuth(jwt, role, userId);
-
-      final authorized = role == 'authorized' || role == 'admin';
+      final authorized = response.role == 'authorized' || response.role == 'admin';
       state = BackendAuthState(
         status: authorized
             ? BackendAuthStatus.authorized
             : BackendAuthStatus.unauthorized,
-        jwt: jwt,
-        role: role,
-        userId: userId,
+        jwt: response.token,
+        role: response.role,
+        userId: response.userId,
       );
     } catch (e) {
       state = BackendAuthState(
@@ -193,11 +188,9 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
     if (state.jwt == null) return;
 
     try {
-      final data = await _api.getQrCode(state.jwt!);
-      final qrUrl = data['qr_url'] as String? ?? '';
-      final expire = data['expire_seconds'] as int? ?? 300;
+      final response = await _api.getQrCode(state.jwt!);
 
-      if (qrUrl.isEmpty) {
+      if (response.qrUrl.isEmpty) {
         // 后端说已授权，无需二维码
         await _saveAuth(state.jwt!, 'authorized', state.userId);
         state = state.copyWith(
@@ -208,8 +201,8 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
       }
 
       state = state.copyWith(
-        qrUrl: qrUrl,
-        qrExpireSeconds: expire,
+        qrUrl: response.qrUrl,
+        qrExpireSeconds: response.expireSeconds,
         error: null,
       );
     } catch (e) {
@@ -249,12 +242,11 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
   Future<void> _checkStatus() async {
     if (state.jwt == null) return;
     try {
-      final data = await _api.checkStatus(state.jwt!);
-      final status = data['status'] as String?;
+      final response = await _api.checkStatus(state.jwt!);
 
-      if (status == 'authorized') {
-        final newToken = data['token'] as String? ?? state.jwt!;
-        final userId = data['user_id'] as int?;
+      if (response.status == 'authorized') {
+        final newToken = response.token ?? state.jwt!;
+        final userId = response.userId;
 
         await _saveAuth(newToken, 'authorized', userId ?? state.userId ?? 0);
         if (mounted) {

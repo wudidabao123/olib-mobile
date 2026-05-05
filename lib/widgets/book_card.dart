@@ -81,7 +81,7 @@ class _BookCardState extends State<BookCard> with SingleTickerProviderStateMixin
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+              color: Colors.black.withValues(alpha:isDark ? 0.2 : 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -263,19 +263,19 @@ class _BookCardState extends State<BookCard> with SingleTickerProviderStateMixin
           end: Alignment.bottomRight,
           colors: isDark
               ? [
-                  AppColors.primary.withOpacity(0.15),
-                  AppColors.primary.withOpacity(0.08),
+                  AppColors.primary.withValues(alpha:0.15),
+                  AppColors.primary.withValues(alpha:0.08),
                 ]
               : [
-                  AppColors.primary.withOpacity(0.08),
-                  AppColors.primary.withOpacity(0.04),
+                  AppColors.primary.withValues(alpha:0.08),
+                  AppColors.primary.withValues(alpha:0.04),
                 ],
         ),
       ),
       child: Center(
         child: Icon(
           Icons.auto_stories_rounded,
-          color: AppColors.primary.withOpacity(isDark ? 0.4 : 0.25),
+          color: AppColors.primary.withValues(alpha:isDark ? 0.4 : 0.25),
           size: 36,
         ),
       ),

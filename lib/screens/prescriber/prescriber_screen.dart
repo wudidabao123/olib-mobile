@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/prescription.dart';
-import '../../models/book.dart';
 import '../../providers/prescriber_provider.dart';
 import '../../providers/backend_auth_provider.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
-import '../../l10n/app_localizations.dart';
 
 class PrescriberScreen extends ConsumerStatefulWidget {
   const PrescriberScreen({super.key});
@@ -115,7 +113,7 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.primary.withOpacity(0.08),
+              AppColors.primary.withValues(alpha:0.08),
               Colors.white,
             ],
           ),
@@ -390,7 +388,7 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
                 width: 72,
                 height: 72,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha:0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -451,7 +449,7 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.08),
+                      color: AppColors.primary.withValues(alpha:0.08),
                       blurRadius: 24,
                       offset: const Offset(0, 8),
                     ),
@@ -468,7 +466,7 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
                         gradient: LinearGradient(
                           colors: [
                             AppColors.primary,
-                            AppColors.primary.withOpacity(0.8),
+                            AppColors.primary.withValues(alpha:0.8),
                           ],
                         ),
                         borderRadius: const BorderRadius.vertical(
@@ -501,10 +499,10 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.05),
+                          color: AppColors.primary.withValues(alpha:0.05),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: AppColors.primary.withOpacity(0.15),
+                            color: AppColors.primary.withValues(alpha:0.15),
                           ),
                         ),
                         child: Row(
@@ -587,7 +585,7 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -604,7 +602,7 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withOpacity(0.15),
+                    color: AppColors.accent.withValues(alpha:0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -723,7 +721,7 @@ class _ThemeCard extends StatelessWidget {
           border: Border.all(color: Colors.grey[200]!),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha:0.03),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),

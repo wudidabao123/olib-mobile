@@ -6,10 +6,8 @@ import '../../providers/books_provider.dart';
 import '../../screens/book_detail/book_detail_screen.dart';
 import '../../widgets/book_card.dart';
 import '../../widgets/book_list_tile.dart';
-import '../../widgets/share_snapshot_widget.dart';
 import '../../widgets/share_preview_sheet.dart'; // [New]
 import 'scanner_screen.dart'; // [New]
-import '../../utils/share_utils.dart';
 import '../../theme/app_colors.dart';
 
 class FavoritesScreen extends ConsumerStatefulWidget {
@@ -23,7 +21,6 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   bool _isListView = false;
   bool _isSelectMode = false;
   Set<int> _selectedBookIds = {};
-  final GlobalKey _snapshotKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +147,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
               color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: AppColors.textSecondary.withOpacity(0.15),
+                color: AppColors.textSecondary.withValues(alpha:0.15),
               ),
             ),
             child: Row(
@@ -190,7 +187,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
         child: Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: selected ? AppColors.primary.withOpacity(0.12) : null,
+            color: selected ? AppColors.primary.withValues(alpha:0.12) : null,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Icon(
@@ -243,17 +240,17 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary
-                          : Colors.white.withOpacity(0.9),
+                          : Colors.white.withValues(alpha:0.9),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isSelected
                             ? AppColors.primary
-                            : AppColors.textSecondary.withOpacity(0.3),
+                            : AppColors.textSecondary.withValues(alpha:0.3),
                         width: 2,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha:0.1),
                           blurRadius: 4,
                         ),
                       ],
@@ -319,13 +316,13 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.08),
+              color: AppColors.primary.withValues(alpha:0.08),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.bookmark_border_rounded,
               size: 56,
-              color: AppColors.primary.withOpacity(0.5),
+              color: AppColors.primary.withValues(alpha:0.5),
             ),
           ),
           const SizedBox(height: 20),
@@ -362,7 +359,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
         color: Theme.of(context).scaffoldBackgroundColor,
         border: Border(
           top: BorderSide(
-            color: AppColors.textSecondary.withOpacity(0.1),
+            color: AppColors.textSecondary.withValues(alpha:0.1),
           ),
         ),
       ),

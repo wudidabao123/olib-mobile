@@ -38,10 +38,10 @@ class DomainSelector extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: (color ?? AppColors.primary).withOpacity(0.1),
+          color: (color ?? AppColors.primary).withValues(alpha:0.1),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: (color ?? AppColors.primary).withOpacity(0.3),
+            color: (color ?? AppColors.primary).withValues(alpha:0.3),
           ),
         ),
         child: Row(

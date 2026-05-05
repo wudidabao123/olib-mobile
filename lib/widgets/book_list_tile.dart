@@ -23,7 +23,7 @@ class BookListTile extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha:0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Icon(
@@ -58,7 +58,7 @@ class BookListTile extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: AppColors.accent.withOpacity(0.15),
+                      color: AppColors.accent.withValues(alpha:0.15),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(

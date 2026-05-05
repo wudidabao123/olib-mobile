@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
@@ -14,7 +13,6 @@ class AppTheme {
         primary: AppColors.primary,
         secondary: AppColors.accent,
         surface: AppColors.surface,
-        background: AppColors.background,
         onPrimary: Colors.white,
         onSurface: AppColors.textPrimary,
         error: AppColors.error,
@@ -103,7 +101,6 @@ class AppTheme {
         primary: AppColors.primary,
         secondary: AppColors.accent,
         surface: Color(0xFF1E1E1E),
-        background: Color(0xFF121212),
         onPrimary: Colors.white,
         onSurface: Colors.white,
       ),

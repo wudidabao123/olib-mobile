@@ -214,7 +214,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: CircleAvatar(
-                      backgroundColor: AppColors.primary.withOpacity(0.1),
+                      backgroundColor: AppColors.primary.withValues(alpha:0.1),
                       child: Text(name[0].toUpperCase()),
                     ),
                     title: Text(name),
@@ -298,7 +298,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha:0.2),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -322,7 +322,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Text(
                     AppLocalizations.of(context).get('login_to_continue'),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha:0.8),
                         ),
                   ),
                   
@@ -341,7 +341,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha:0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -448,10 +448,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha:0.15),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha:0.2),
           width: 1,
         ),
       ),
@@ -462,7 +462,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: [
               Icon(
                 Icons.info_outline,
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha:0.8),
                 size: 16,
               ),
               const SizedBox(width: 8),
@@ -472,7 +472,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ? '请使用 Z-Library 官网账号登录'
                       : 'Please login with your Z-Library account',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha:0.9),
                     fontSize: 13,
                   ),
                   textAlign: TextAlign.center,
@@ -486,7 +486,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ? '没有账号？请自行前往官网注册，本软件不提供注册方式。'
                 : "No account? Please register on official site. This app doesn't provide registration.",
             style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha:0.6),
               fontSize: 12,
             ),
             textAlign: TextAlign.center,
@@ -531,10 +531,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha:0.2),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: color.withOpacity(0.5),
+          color: color.withValues(alpha:0.5),
           width: 1,
         ),
       ),

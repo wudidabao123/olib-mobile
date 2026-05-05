@@ -209,7 +209,7 @@ class _SharePreviewSheetState extends State<SharePreviewSheet> {
       label: Text(label),
       selected: isSelected,
       onSelected: (_) => setState(() => _selectedStyle = style),
-      selectedColor: AppColors.primary.withOpacity(0.2),
+      selectedColor: AppColors.primary.withValues(alpha:0.2),
       labelStyle: TextStyle(
         color: isSelected ? AppColors.primary : AppColors.textSecondary,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
