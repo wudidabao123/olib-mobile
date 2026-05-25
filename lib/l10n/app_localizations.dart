@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'translations/en.dart' as t_en;
 import 'translations/zh.dart' as t_zh;
-import 'translations/zh_tw.dart' as t_zh_tw;
 
 /// App translations for all supported languages
 class AppLocalizations {
@@ -19,14 +18,10 @@ class AppLocalizations {
   static final Map<String, Map<String, String>> _localizedValues = {
     'en': t_en.en,
     'zh': t_zh.zh,
-    'zh_TW': t_zh_tw.zhTW,
   };
 
   String get(String key) {
-    String langCode = locale.languageCode;
-    if (locale.scriptCode == 'Hant' || locale.countryCode == 'TW' || locale.countryCode == 'HK') {
-      langCode = 'zh_TW';
-    }
+    final langCode = locale.languageCode;
     return _localizedValues[langCode]?[key] ?? _localizedValues['en']?[key] ?? key;
   }
 
@@ -65,31 +60,20 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 const supportedLocales = [
   Locale('en'),
   Locale('zh'),
-  Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
 ];
 
-/// Language display names (legacy, use allLanguages in settings_screen.dart)
+/// Language display names
 const localeDisplayNames = {
   'en': 'English',
   'zh': '简体中文',
-  'zh_TW': '繁體中文',
 };
 
 /// Get locale key for storage
 String getLocaleKey(Locale locale) {
-  if (locale.languageCode == 'zh') {
-    if (locale.scriptCode == 'Hant' || locale.countryCode == 'TW' || locale.countryCode == 'HK') {
-      return 'zh_TW';
-    }
-    return 'zh';
-  }
   return locale.languageCode;
 }
 
 /// Parse locale from key
 Locale parseLocaleKey(String key) {
-  if (key == 'zh_TW') {
-    return const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant');
-  }
   return Locale(key);
 }
