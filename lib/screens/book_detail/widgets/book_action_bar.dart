@@ -7,6 +7,9 @@ import 'package:olib_api_plugin/olib_api_plugin.dart';
 import '../../../providers/download_provider.dart';
 import '../../../providers/domain_provider.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../providers/backend_auth_provider.dart';
+import '../../../services/backend_books_api.dart';
+import '../../../utils/quota_phrases.dart';
 import '../../../theme/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../services/update_service.dart';
@@ -19,6 +22,9 @@ class BookActionBar extends ConsumerWidget {
   final bool isDownloading;
   final bool isCompleted;
   final bool isDark;
+  /// 从 AI 寻书入口进来的书，下载走 backend 免费下载路径，
+  /// 不消耗用户 z-library 账号配额。详见 BookDetailArgs。
+  final bool fromAi;
 
   const BookActionBar({
     super.key,
@@ -27,6 +33,7 @@ class BookActionBar extends ConsumerWidget {
     required this.isDownloading,
     required this.isCompleted,
     required this.isDark,
+    this.fromAi = false,
   });
 
   @override
@@ -247,29 +254,68 @@ class BookActionBar extends ConsumerWidget {
           btnOkText: isZh ? '重新下载' : 'Download Again',
           btnOkColor: AppColors.primary,
           btnOkOnPress: () {
-            ref.read(downloadProvider.notifier).startDownload(book);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context).get('downloading')),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            );
+            _kickoffDownload(context, ref);
           },
         ).show();
         return;
       }
 
-      ref.read(downloadProvider.notifier).startDownload(book);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).get('downloading')),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        );
-      }
+      if (!context.mounted) return;
+      await _kickoffDownload(context, ref);
     }
+  }
+
+  /// 真正触发下载的统一入口 — 根据 fromAi 二分：
+  /// - fromAi=true:  调 backend `/books/download-url` 拿 z-lib 签名 URL（消耗
+  ///                 免费下载配额），用内置 DownloadNotifier streaming 到本地
+  /// - fromAi=false: 老路径，用户自己 z-library 账号
+  ///
+  /// 配额耗尽时显示文学化文案，UI 无任何"配额/免费"商业词。
+  Future<void> _kickoffDownload(BuildContext context, WidgetRef ref) async {
+    final downloadingMsg = AppLocalizations.of(context).get('downloading');
+    final notifier = ref.read(downloadProvider.notifier);
+
+    if (!fromAi) {
+      notifier.startDownload(book);
+      _toast(context, downloadingMsg);
+      return;
+    }
+
+    // AI 寻书路径：先用 backend 拿 URL（这一步消耗免费下载配额）
+    final token = ref.read(backendAuthProvider).jwt;
+    if (token == null) {
+      // 入口已 gated，正常路径走不到这里；兜底回退到用户自己账号
+      notifier.startDownload(book);
+      _toast(context, downloadingMsg);
+      return;
+    }
+
+    try {
+      final url = await BackendBooksApi().getAiBookDownloadUrl(
+        olibToken: token,
+        bookId: book.id.toString(),
+        hashId: book.hash ?? '',
+      );
+      if (!context.mounted) return;
+      notifier.startDownload(book, presetUrl: url);
+      _toast(context, downloadingMsg);
+    } on FreeDownloadQuotaExceeded {
+      if (!context.mounted) return;
+      _toast(context, QuotaPhrases.randomFrom(QuotaPhrases.downloadQuota));
+    } catch (e) {
+      if (!context.mounted) return;
+      final isZh = Localizations.localeOf(context).languageCode == 'zh';
+      _toast(context, isZh ? '获取下载链接失败：$e' : 'Failed to get download URL: $e');
+    }
+  }
+
+  void _toast(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
   }
 }

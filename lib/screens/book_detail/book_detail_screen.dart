@@ -4,6 +4,7 @@ import 'package:olib_api_plugin/olib_api_plugin.dart';
 import '../../providers/books_provider.dart';
 import '../../providers/download_provider.dart';
 import '../../theme/app_colors.dart';
+import 'book_detail_args.dart';
 import 'widgets/book_hero_section.dart';
 import 'widgets/book_info_section.dart';
 import 'widgets/book_action_bar.dart';
@@ -13,7 +14,13 @@ class BookDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final book = ModalRoute.of(context)!.settings.arguments as Book;
+    // 兼容两种 arg：BookDetailArgs（带 fromAi）和直接的 Book（旧调用方）。
+    final raw = ModalRoute.of(context)!.settings.arguments;
+    final BookDetailArgs args = raw is BookDetailArgs
+        ? raw
+        : BookDetailArgs(book: raw as Book);
+    final book = args.book;
+    final fromAi = args.fromAi;
     final tasks = ref.watch(downloadProvider);
 
     DownloadTask? downloadTask;
@@ -38,6 +45,7 @@ class BookDetailScreen extends ConsumerWidget {
         isDownloading: isDownloading,
         isCompleted: isCompleted,
         isDark: isDark,
+        fromAi: fromAi,
       ),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),

@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../models/prescription.dart';
 import '../../providers/prescriber_provider.dart';
 import '../../providers/backend_auth_provider.dart';
 import '../../routes/app_routes.dart';
-import '../../services/backend_books_api.dart';
-import '../../utils/quota_phrases.dart';
+import '../book_detail/book_detail_args.dart';
 import 'widgets/prescriber_input_section.dart';
 import 'widgets/prescriber_result_section.dart';
 
@@ -107,63 +105,17 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
   }
 
   /// 寻书结果点击处理：
-  /// - AI 推荐 + 已匹配 → 走 backend 直接拿下载 URL（消耗当日免费下载次数）
-  /// - 非 AI 来源 / 已匹配 → 进 book detail，由用户自己 z-library 账号下载
-  /// - 未匹配 → 跳搜索
-  Future<void> _onGetBook(ReadingTip tip) async {
+  /// - 已匹配 → 进 book detail。AI 来源带 fromAi=true 标识，detail 页下载时
+  ///            才真正消耗后端免费下载配额（消耗时机推迟到用户明确"下载"才发生）
+  /// - 未匹配 → 跳搜索页
+  void _onGetBook(ReadingTip tip) {
     if (tip.matchedBook == null) {
       Navigator.of(context).pushNamed(AppRoutes.search);
       return;
     }
-    if (tip.fromAi) {
-      await _downloadAiBook(tip);
-      return;
-    }
     Navigator.of(context).pushNamed(
       AppRoutes.bookDetail,
-      arguments: tip.matchedBook,
-    );
-  }
-
-  /// AI 推荐书走 backend 下载 — 配额耗尽时显示文学化文案而非"配额已用完"。
-  Future<void> _downloadAiBook(ReadingTip tip) async {
-    final book = tip.matchedBook;
-    if (book == null) return;
-    final token = ref.read(backendAuthProvider).jwt;
-    if (token == null) {
-      // 入口已 gated，正常路径走不到这里
-      return;
-    }
-
-    final api = BackendBooksApi();
-    try {
-      final url = await api.getAiBookDownloadUrl(
-        olibToken: token,
-        bookId: book.id.toString(),
-        hashId: book.hash ?? '',
-      );
-      if (!mounted) return;
-      // v1：交给 OS / 浏览器处理下载。后续可换成 DownloadNotifier 走 app 内下载管理。
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-    } on FreeDownloadQuotaExceeded {
-      if (!mounted) return;
-      _showPhraseSnackBar(QuotaPhrases.randomFrom(QuotaPhrases.downloadQuota));
-    } catch (e) {
-      if (!mounted) return;
-      final isZh = Localizations.localeOf(context).languageCode == 'zh';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isZh ? '下载失败：$e' : 'Download failed: $e')),
-      );
-    }
-  }
-
-  void _showPhraseSnackBar(String phrase) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(phrase),
-        duration: const Duration(seconds: 4),
-        behavior: SnackBarBehavior.floating,
-      ),
+      arguments: BookDetailArgs(book: tip.matchedBook!, fromAi: tip.fromAi),
     );
   }
 
