@@ -41,6 +41,11 @@ class PrescriberInputSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 配额耗尽时锁定所有 AI 触发入口；UI 仍可滚动浏览。
+    final state = ref.watch(prescriberProvider);
+    final lockedByQuota = state.status == PrescriberStatus.error &&
+        state.errorKind == PrescriberErrorKind.quota;
+
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       sliver: SliverList.list(
@@ -53,11 +58,19 @@ class PrescriberInputSection extends ConsumerWidget {
           ),
           _HeroCard(isZh: isZh),
           const SizedBox(height: 24),
-          _ThemeGrid(isZh: isZh, onTap: onDiagnoseWithTheme),
+          _ThemeGrid(
+            isZh: isZh,
+            onTap: onDiagnoseWithTheme,
+            disabled: lockedByQuota,
+          ),
           const SizedBox(height: 28),
           _OrDivider(label: isZh ? '或者自己描述' : 'Or describe it yourself'),
           const SizedBox(height: 16),
-          _InputField(controller: inputController, isZh: isZh),
+          _InputField(
+            controller: inputController,
+            isZh: isZh,
+            enabled: !lockedByQuota,
+          ),
           const SizedBox(height: 14),
           _FormatPicker(isZh: isZh),
           const SizedBox(height: 18),
@@ -65,6 +78,7 @@ class PrescriberInputSection extends ConsumerWidget {
             controller: inputController,
             isZh: isZh,
             onPressed: onDiagnoseWithInput,
+            forceDisabled: lockedByQuota,
           ),
           const SizedBox(height: 40),
         ],
@@ -156,12 +170,18 @@ class _HeroCard extends StatelessWidget {
 class _ThemeGrid extends StatelessWidget {
   final bool isZh;
   final void Function(String themeId) onTap;
+  /// 配额耗尽时整片网格 IgnorePointer + Opacity 灰掉
+  final bool disabled;
 
-  const _ThemeGrid({required this.isZh, required this.onTap});
+  const _ThemeGrid({
+    required this.isZh,
+    required this.onTap,
+    this.disabled = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
+    final grid = GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: prescriberThemes.length,
@@ -183,6 +203,11 @@ class _ThemeGrid extends StatelessWidget {
           onTap: () => onTap(theme.id),
         );
       },
+    );
+    if (!disabled) return grid;
+    return IgnorePointer(
+      ignoring: true,
+      child: Opacity(opacity: 0.4, child: grid),
     );
   }
 }
@@ -222,8 +247,14 @@ class _OrDivider extends StatelessWidget {
 class _InputField extends StatelessWidget {
   final TextEditingController controller;
   final bool isZh;
+  /// 配额耗尽时 enabled=false → TextField 内置禁用样式 + readOnly
+  final bool enabled;
 
-  const _InputField({required this.controller, required this.isZh});
+  const _InputField({
+    required this.controller,
+    required this.isZh,
+    this.enabled = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -231,11 +262,14 @@ class _InputField extends StatelessWidget {
     return TextField(
       controller: controller,
       maxLines: 3,
+      enabled: enabled,
       style: TextStyle(color: cs.onSurface, fontSize: 14),
       decoration: InputDecoration(
-        hintText: isZh
-            ? '描述一下你最近的状态或困惑…'
-            : 'Describe how you feel lately…',
+        hintText: enabled
+            ? (isZh
+                ? '描述一下你最近的状态或困惑…'
+                : 'Describe how you feel lately…')
+            : (isZh ? '今日字符已尽…' : 'Until tomorrow…'),
         hintStyle: TextStyle(
           color: cs.onSurfaceVariant.withValues(alpha: 0.6),
           fontSize: 14,
@@ -390,40 +424,12 @@ class _ErrorBanner extends ConsumerWidget {
     if (state.status != PrescriberStatus.error || state.errorMessage == null) {
       return const SizedBox.shrink();
     }
-    final cs = Theme.of(context).colorScheme;
-
-    // 配额耗尽 → 友好提示样式（无 "失败" 字样、无重试按钮）
+    // 配额耗尽 → 由 dialog + 禁用输入承担反馈，行内 banner 不再显示
+    // （避免三处同时说同一件事）
     if (state.errorKind == PrescriberErrorKind.quota) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: cs.primary.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: cs.primary.withValues(alpha: 0.2)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.auto_stories_rounded, color: cs.primary, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  state.errorMessage!,
-                  style: TextStyle(
-                    fontSize: 13,
-                    height: 1.55,
-                    color: cs.onSurface,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return const SizedBox.shrink();
     }
+    final cs = Theme.of(context).colorScheme;
 
     // 真错误 → 原有 "寻书失败" 样式 + 重试入口
     final canRetry = inputController.text.trim().isNotEmpty;
@@ -488,11 +494,14 @@ class _DiagnoseButton extends StatelessWidget {
   final TextEditingController controller;
   final bool isZh;
   final VoidCallback onPressed;
+  /// 配额耗尽时 forceDisabled=true 强制置灰，无视输入框内容
+  final bool forceDisabled;
 
   const _DiagnoseButton({
     required this.controller,
     required this.isZh,
     required this.onPressed,
+    this.forceDisabled = false,
   });
 
   @override
@@ -501,7 +510,11 @@ class _DiagnoseButton extends StatelessWidget {
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) {
-        final enabled = controller.text.trim().isNotEmpty;
+        final enabled =
+            !forceDisabled && controller.text.trim().isNotEmpty;
+        final label = forceDisabled
+            ? (isZh ? '今日已尽' : 'Until tomorrow')
+            : (isZh ? '开始寻书' : 'Find Books');
         return SizedBox(
           width: double.infinity,
           height: 50,
@@ -522,10 +535,11 @@ class _DiagnoseButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.auto_awesome, size: 20),
+                Icon(forceDisabled ? Icons.nightlight_round : Icons.auto_awesome,
+                    size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  isZh ? '开始寻书' : 'Find Books',
+                  label,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,

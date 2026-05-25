@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/prescription.dart';
 import '../../providers/prescriber_provider.dart';
 import '../../providers/backend_auth_provider.dart';
 import '../../routes/app_routes.dart';
+import '../../theme/app_colors.dart';
 import '../book_detail/book_detail_args.dart';
 import 'widgets/prescriber_input_section.dart';
 import 'widgets/prescriber_result_section.dart';
@@ -119,6 +121,22 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
     );
   }
 
+  /// 配额耗尽时强化反馈：弹 dialog（用 AwesomeDialog 跟 app 风格保持一致）。
+  /// dialog 关掉后输入区域仍处于禁用态，避免无效操作。
+  void _showQuotaDialog(String message, bool isZh) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.noHeader,
+      animType: AnimType.bottomSlide,
+      dismissOnTouchOutside: false,
+      title: isZh ? '今日已尽' : 'Until tomorrow',
+      desc: message,
+      btnOkText: isZh ? '明日再来' : 'See you tomorrow',
+      btnOkColor: AppColors.primary,
+      btnOkOnPress: () {},
+    ).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(prescriberProvider);
@@ -126,6 +144,17 @@ class _PrescriberScreenState extends ConsumerState<PrescriberScreen>
     final isZh = locale == 'zh';
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+
+    // 监听 state 转换到 quota 错误（用户刚刚撞配额上限），弹一次性 dialog。
+    // ref.listen 只在 state 变化时触发，进入页面时若已是 quota 不会重弹。
+    ref.listen<PrescriberState>(prescriberProvider, (prev, next) {
+      final justBecameQuota = next.status == PrescriberStatus.error &&
+          next.errorKind == PrescriberErrorKind.quota &&
+          (prev?.errorKind != PrescriberErrorKind.quota);
+      if (justBecameQuota && next.errorMessage != null) {
+        _showQuotaDialog(next.errorMessage!, isZh);
+      }
+    });
 
     return Scaffold(
       body: Container(
