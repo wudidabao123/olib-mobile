@@ -6,6 +6,8 @@ import '../../../providers/settings_provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../../utils/file_utils.dart';
 import '../../../utils/locale_utils.dart' as locale_utils;
+import 'section_header.dart';
+import 'settings_card.dart';
 
 class DownloadPathSection extends ConsumerWidget {
   const DownloadPathSection({super.key});
@@ -19,16 +21,12 @@ class DownloadPathSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 24),
-        Text(
-          isZh ? '下载' : 'Downloads',
-          style: Theme
-              .of(context)
-              .textTheme
-              .titleMedium,
+        const SizedBox(height: 20),
+        SectionHeader(
+          icon: Icons.download_rounded,
+          title: isZh ? '下载' : 'Downloads',
         ),
-        const SizedBox(height: 8),
-        Card(
+        SettingsCard(
           child: ListTile(
             leading: const Icon(Icons.folder_outlined),
             title: Text(isZh ? '下载目录' : 'Download Directory'),

@@ -4,6 +4,8 @@ import '../../../providers/settings_provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../utils/locale_utils.dart' as locale_utils;
+import 'section_header.dart';
+import 'settings_card.dart';
 
 class LanguageSection extends ConsumerWidget {
   const LanguageSection({super.key});
@@ -24,15 +26,11 @@ class LanguageSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          AppLocalizations.of(context).get('language_setting'),
-          style: Theme
-              .of(context)
-              .textTheme
-              .titleMedium,
+        SectionHeader(
+          icon: Icons.translate_rounded,
+          title: AppLocalizations.of(context).get('language_setting'),
         ),
-        const SizedBox(height: 8),
-        Card(
+        SettingsCard(
           child: ListTile(
             leading: const Icon(Icons.language_rounded),
             title: Text(
@@ -81,7 +79,7 @@ class LanguageSection extends ConsumerWidget {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: Theme.of(context).colorScheme.outlineVariant,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -147,9 +145,14 @@ class LanguageSection extends ConsumerWidget {
     return ListTile(
       leading: Text(flag, style: const TextStyle(fontSize: 28)),
       title: Text(native, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(english, style: TextStyle(color: Colors.grey[600])),
+      subtitle: Text(
+        english,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
       trailing: isSelected
-          ? Icon(Icons.check_circle, color: AppColors.primary)
+          ? const Icon(Icons.check_circle, color: AppColors.primary)
           : null,
       onTap: () {
         if (key == null) {
