@@ -23,9 +23,11 @@ class BooklistFileUtils {
 
   /// 让用户选一个 JSON 文件并解析。
   static Future<BooklistShareData?> pickAndParse() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['json'],
+
+
       withData: true,
     );
     if (result == null || result.files.isEmpty) return null;

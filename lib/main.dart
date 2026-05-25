@@ -19,7 +19,6 @@ import 'screens/reader/reader_screen.dart';
 import 'screens/prescriber/prescriber_screen.dart';
 import 'screens/auth/qr_auth_screen.dart';
 import 'services/hive_service.dart';
-import 'services/ad_service.dart';
 import 'services/booklist_share_codec.dart';
 import 'services/share_intent_handler.dart';
 import 'l10n/app_localizations.dart';
@@ -29,10 +28,7 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await HiveService.init();
-  
-  // Initialize Unity Ads (non-blocking)
-  AdService.init();
-  
+
   runApp(
     const ProviderScope(
       child: MyApp(),
