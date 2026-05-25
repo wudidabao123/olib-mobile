@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/backend_api.dart';
 import '../services/hive_service.dart';
@@ -105,7 +106,9 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
     _refreshStatusFromServer(jwt);
   }
 
-  /// 向后端确认 JWT 是否仍然有效
+  /// 向后端确认 JWT 是否仍然有效。
+  /// 服务器 JWT_SECRET 轮换 / token 过期 → 401，这里要清掉本地 JWT 并
+  /// 重新 register 拿 anon token，否则后续所有调用都会撞 401。
   Future<void> _refreshStatusFromServer(String jwt) async {
     try {
       final response = await _api.checkStatus(jwt);
@@ -123,7 +126,6 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
           );
         }
       } else {
-        // 服务器说未授权（可能 JWT 过期或被撤销）
         if (mounted) {
           state = BackendAuthState(
             status: BackendAuthStatus.unauthorized,
@@ -133,8 +135,21 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
           );
         }
       }
-    } catch (_) {
-      // 离线时保持本地缓存状态，不改变
+    } on DioException catch (e) {
+      final code = e.response?.statusCode;
+      if (code == 401 || code == 403) {
+        // JWT 已废（secret 轮换 / 过期 / audience 错），清掉重新拿。
+        debugPrint(
+          '[BackendAuth] cached JWT rejected by server '
+          '(HTTP $code: ${e.response?.data}), re-registering...',
+        );
+        await register();
+      } else {
+        // 网络 / 5xx / 离线 — 保留本地缓存，等下次重试
+        debugPrint('[BackendAuth] checkStatus failed (kept cache): $e');
+      }
+    } catch (e) {
+      debugPrint('[BackendAuth] checkStatus unexpected error: $e');
     }
   }
 
@@ -164,9 +179,12 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
   Future<void> register() async {
     try {
       final deviceId = await _getDeviceId();
+      debugPrint('[BackendAuth] /auth/register device_id=$deviceId');
       final response = await _api.register(deviceId: deviceId);
+      debugPrint(
+        '[BackendAuth] register OK, anon token expires_in=${response.expiresIn}s',
+      );
 
-      // 仅保存 anon JWT；之前可能残留的 role/userId 一并清掉，避免误判已授权。
       final box = HiveService.authBox;
       await box.put(_kJwt, response.token);
       await box.delete(_kRole);
@@ -176,7 +194,17 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
         status: BackendAuthStatus.unauthorized,
         jwt: response.token,
       );
+    } on DioException catch (e) {
+      debugPrint(
+        '[BackendAuth] register FAILED: HTTP ${e.response?.statusCode} ${e.response?.data} '
+        '(${e.message})',
+      );
+      state = BackendAuthState(
+        status: BackendAuthStatus.unauthorized,
+        error: '设备注册失败: ${e.response?.data ?? e.message ?? e}',
+      );
     } catch (e) {
+      debugPrint('[BackendAuth] register FAILED (unexpected): $e');
       state = BackendAuthState(
         status: BackendAuthStatus.unauthorized,
         error: '设备注册失败: $e',
@@ -190,23 +218,38 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
     if (state.jwt == null) return;
 
     try {
+      debugPrint('[BackendAuth] /auth/qrcode jwt=${state.jwt!.substring(0, 20)}...');
       final response = await _api.getQrCode(state.jwt!);
+      debugPrint('[BackendAuth] qrcode OK: ${response.qrUrl}');
       state = state.copyWith(
         qrUrl: response.qrUrl,
         qrExpireSeconds: response.expireSeconds,
         error: null,
       );
     } on DioException catch (e) {
-      // anon token 30 分钟过期 / audience 错误（残留旧 olib token）→ 重新拿 anon。
+      debugPrint(
+        '[BackendAuth] qrcode FAILED: HTTP ${e.response?.statusCode} ${e.response?.data}',
+      );
+      // anon token 30 分钟过期 / JWT_SECRET 轮换 / audience 错 → 重新 register 一次再调。
       if (e.response?.statusCode == 401) {
+        debugPrint('[BackendAuth] qrcode 401, re-registering and retrying...');
         await register();
         if (state.jwt == null) return;
         try {
           final response = await _api.getQrCode(state.jwt!);
+          debugPrint('[BackendAuth] qrcode retry OK: ${response.qrUrl}');
           state = state.copyWith(
             qrUrl: response.qrUrl,
             qrExpireSeconds: response.expireSeconds,
             error: null,
+          );
+          return;
+        } on DioException catch (e2) {
+          debugPrint(
+            '[BackendAuth] qrcode retry FAILED: HTTP ${e2.response?.statusCode} ${e2.response?.data}',
+          );
+          state = state.copyWith(
+            error: '获取二维码失败: ${e2.response?.data ?? e2.message ?? e2}',
           );
           return;
         } catch (e2) {
@@ -214,8 +257,11 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
           return;
         }
       }
-      state = state.copyWith(error: '获取二维码失败: ${e.message ?? e}');
+      state = state.copyWith(
+        error: '获取二维码失败: ${e.response?.data ?? e.message ?? e}',
+      );
     } catch (e) {
+      debugPrint('[BackendAuth] qrcode unexpected error: $e');
       state = state.copyWith(error: '获取二维码失败: $e');
     }
   }
@@ -258,6 +304,7 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
         final newToken = response.token ?? state.jwt!;
         final userId = response.userId;
 
+        debugPrint('[BackendAuth] poll → authorized, user_id=$userId');
         await _saveAuth(newToken, 'authorized', userId ?? state.userId ?? 0);
         if (mounted) {
           state = BackendAuthState(
@@ -269,8 +316,20 @@ class BackendAuthNotifier extends StateNotifier<BackendAuthState> {
         }
         stopPolling();
       }
-    } catch (_) {
-      // 网络错误时继续轮询，不中断
+    } on DioException catch (e) {
+      final code = e.response?.statusCode;
+      if (code == 401 || code == 403) {
+        // 轮询期间 anon token 突然失效（极少见，可能 secret 又换了）→ 停止轮询。
+        debugPrint('[BackendAuth] poll rejected (HTTP $code), stopping');
+        stopPolling();
+        if (mounted) {
+          state = state.copyWith(error: '会话已过期，请重新扫码');
+        }
+      } else {
+        debugPrint('[BackendAuth] poll network err (kept polling): $e');
+      }
+    } catch (e) {
+      debugPrint('[BackendAuth] poll unexpected: $e');
     }
   }
 
