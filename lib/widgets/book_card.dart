@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:olib_api_plugin/olib_api_plugin.dart';
+import '../models/display_book.dart';
 import '../theme/app_colors.dart';
 
 class BookCard extends StatefulWidget {
-  final Book book;
+  final DisplayBook book;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   const BookCard({
     super.key,
     required this.book,
     this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -97,6 +99,7 @@ class _BookCardState extends State<BookCard> with SingleTickerProviderStateMixin
               onTapCancel: _onTapCancel,
               child: InkWell(
                 onTap: widget.onTap,
+                onLongPress: widget.onLongPress,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -180,12 +183,12 @@ class _BookCardState extends State<BookCard> with SingleTickerProviderStateMixin
     );
   }
   
-  /// Build the top meta row (extension + year)
+  /// Build the top meta row (tag + tagExtra)
   Widget _buildMetaRow() {
-    final hasExtension = widget.book.extension != null && widget.book.extension!.isNotEmpty;
-    final hasYear = widget.book.year != null && widget.book.year != 0;
+    final hasTag = widget.book.tag != null && widget.book.tag!.isNotEmpty;
+    final hasTagExtra = widget.book.tagExtra != null && widget.book.tagExtra!.isNotEmpty;
 
-    if (!hasExtension && !hasYear) {
+    if (!hasTag && !hasTagExtra) {
       // Return a minimal spacer if no meta info available
       return const SizedBox(height: 12);
     }
@@ -193,21 +196,25 @@ class _BookCardState extends State<BookCard> with SingleTickerProviderStateMixin
     final cs = Theme.of(context).colorScheme;
     return Row(
       children: [
-        if (hasExtension)
-          Text(
-            widget.book.extension!.toUpperCase(),
-            style: const TextStyle(
-              color: AppColors.accent,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
+        if (hasTag)
+          Flexible(
+            child: Text(
+              widget.book.tag!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: AppColors.accent,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
-        if (hasExtension && hasYear)
+        if (hasTag && hasTagExtra)
           const SizedBox(width: 4),
-        if (hasYear)
+        if (hasTagExtra)
           Text(
-            hasExtension ? '• ${widget.book.year}' : '${widget.book.year}',
+            hasTag ? '• ${widget.book.tagExtra}' : widget.book.tagExtra!,
             style: TextStyle(
               color: cs.onSurfaceVariant,
               fontSize: 10,
@@ -217,12 +224,12 @@ class _BookCardState extends State<BookCard> with SingleTickerProviderStateMixin
     );
   }
 
-  /// Build the bottom row (rating + filesize)
+  /// Build the bottom row (score + meta)
   Widget _buildBottomRow() {
-    final hasScore = widget.book.interestScore != null && widget.book.interestScore!.isNotEmpty;
-    final hasSize = widget.book.filesizeString != null && widget.book.filesizeString!.isNotEmpty;
+    final hasScore = widget.book.score != null && widget.book.score!.isNotEmpty;
+    final hasMeta = widget.book.meta != null && widget.book.meta!.isNotEmpty;
 
-    if (!hasScore && !hasSize) {
+    if (!hasScore && !hasMeta) {
       // Show nothing if no data available
       return const SizedBox.shrink();
     }
@@ -234,7 +241,7 @@ class _BookCardState extends State<BookCard> with SingleTickerProviderStateMixin
           const Icon(Icons.star_rounded, size: 14, color: AppColors.accent),
           const SizedBox(width: 4),
           Text(
-            widget.book.interestScore!,
+            widget.book.score!,
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
@@ -243,9 +250,9 @@ class _BookCardState extends State<BookCard> with SingleTickerProviderStateMixin
           ),
         ],
         const Spacer(),
-        if (hasSize)
+        if (hasMeta)
           Text(
-            widget.book.filesizeString!,
+            widget.book.meta!,
             style: TextStyle(
               fontSize: 10,
               color: cs.onSurfaceVariant,

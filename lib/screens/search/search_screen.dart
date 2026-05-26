@@ -9,6 +9,7 @@ import '../../widgets/book_list_tile.dart';
 import '../../widgets/loading_widget.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/gradient_app_bar.dart';
+import '../../models/display_book.dart';
 import '../../routes/app_routes.dart';
 import '../../l10n/app_localizations.dart';
 import '../../constants/search_filters.dart';
@@ -230,7 +231,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                           }
                                           final book = searchState.books[index];
                                           return BookListTile(
-                                            book: book,
+                                            book: book.toDisplay(),
                                             onTap: () {
                                               Navigator.of(context).pushNamed(
                                                 AppRoutes.bookDetail,
@@ -263,7 +264,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
                                           final book = searchState.books[index];
                                           return BookCard(
-                                            book: book,
+                                            book: book.toDisplay(),
                                             onTap: () {
                                               Navigator.of(context).pushNamed(
                                                 AppRoutes.bookDetail,

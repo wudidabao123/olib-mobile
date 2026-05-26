@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:olib_api_plugin/olib_api_plugin.dart';
+import '../../models/display_book.dart';
 import '../../providers/books_provider.dart';
 import '../../providers/download_provider.dart';
 import '../../theme/app_colors.dart';
@@ -52,7 +53,7 @@ class BookDetailScreen extends ConsumerWidget {
         slivers: [
           // ── 1. Hero Section with Glassmorphism ──
           BookHeroSection(
-            book: book,
+            book: book.toDisplay(),
             isDark: isDark,
             isFavorited: isFavorited,
           ),

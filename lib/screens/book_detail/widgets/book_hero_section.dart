@@ -2,13 +2,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:olib_api_plugin/olib_api_plugin.dart';
+import '../../../models/display_book.dart';
 import '../../../providers/books_provider.dart';
 import '../../../theme/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 
 class BookHeroSection extends ConsumerWidget {
-  final Book book;
+  final DisplayBook book;
   final bool isDark;
   final bool isFavorited;
 
@@ -36,39 +36,40 @@ class BookHeroSection extends ConsumerWidget {
         ),
       ),
       actions: [
-        // ── Favorite Heart Icon ──
-        Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: CircleAvatar(
-            backgroundColor: Colors.black26,
-            child: IconButton(
-              icon: Icon(
-                isFavorited ? Icons.favorite : Icons.favorite_border,
-                color: isFavorited ? Colors.redAccent : Colors.white,
-                size: 20,
+        // ── Favorite Heart Icon (only for Z-Library books) ──
+        if (book.isZLibrary)
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.black26,
+              child: IconButton(
+                icon: Icon(
+                  isFavorited ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorited ? Colors.redAccent : Colors.white,
+                  size: 20,
+                ),
+                onPressed: () async {
+                  final bookId = book.id;
+                  if (isFavorited) {
+                    await ref.read(savedBooksProvider.notifier).unsaveBook(bookId);
+                  } else {
+                    await ref.read(savedBooksProvider.notifier).saveBook(bookId);
+                  }
+                  // Refresh the favorite state
+                  ref.invalidate(isBookFavoritedProvider(bookId));
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(isFavorited ? '已取消收藏' : AppLocalizations.of(context).get('like')),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    );
+                  }
+                },
               ),
-              onPressed: () async {
-                final bookId = book.id.toString();
-                if (isFavorited) {
-                  await ref.read(savedBooksProvider.notifier).unsaveBook(bookId);
-                } else {
-                  await ref.read(savedBooksProvider.notifier).saveBook(bookId);
-                }
-                // Refresh the favorite state
-                ref.invalidate(isBookFavoritedProvider(bookId));
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(isFavorited ? '已取消收藏' : AppLocalizations.of(context).get('like')),
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  );
-                }
-              },
             ),
           ),
-        ),
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(

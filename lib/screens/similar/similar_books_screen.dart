@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/zlibrary_provider.dart';
 import 'package:olib_api_plugin/olib_api_plugin.dart';
+import '../../models/display_book.dart';
 import '../../widgets/book_card.dart';
 import '../../widgets/book_list_tile.dart';
 import '../../widgets/loading_widget.dart';
@@ -181,7 +182,7 @@ class _SimilarBooksScreenState extends ConsumerState<SimilarBooksScreen> {
                                         itemBuilder: (context, index) {
                                           final book = _books[index];
                                           return BookListTile(
-                                            book: book,
+                                            book: book.toDisplay(),
                                             onTap: () {
                                               Navigator.of(context).pushNamed(
                                                 AppRoutes.bookDetail,
@@ -203,7 +204,7 @@ class _SimilarBooksScreenState extends ConsumerState<SimilarBooksScreen> {
                                         itemBuilder: (context, index) {
                                           final book = _books[index];
                                           return BookCard(
-                                            book: book,
+                                            book: book.toDisplay(),
                                             onTap: () {
                                               Navigator.of(context).pushNamed(
                                                 AppRoutes.bookDetail,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:olib_api_plugin/olib_api_plugin.dart';
+import '../models/display_book.dart';
 import '../theme/app_colors.dart';
 
 /// Simplified list tile for books - compact view without cover images
 class BookListTile extends StatelessWidget {
-  final Book book;
+  final DisplayBook book;
   final VoidCallback? onTap;
 
   const BookListTile({
@@ -54,8 +54,8 @@ class BookListTile extends StatelessWidget {
             const SizedBox(height: 4),
             Row(
               children: [
-                // Extension badge
-                if (book.extension != null && book.extension!.isNotEmpty)
+                // Tag badge (format/category)
+                if (book.tag != null && book.tag!.isNotEmpty)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
@@ -63,7 +63,7 @@ class BookListTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      book.extension!.toUpperCase(),
+                      book.tag!,
                       style: const TextStyle(
                         color: AppColors.accent,
                         fontSize: 10,
@@ -71,22 +71,22 @@ class BookListTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                if (book.extension != null && book.filesizeString != null)
+                if (book.tag != null && book.meta != null)
                   const SizedBox(width: 8),
-                // File size
-                if (book.filesizeString != null)
+                // Meta info
+                if (book.meta != null)
                   Text(
-                    book.filesizeString!,
+                    book.meta!,
                     style: TextStyle(
                       color: cs.onSurfaceVariant,
                       fontSize: 11,
                     ),
                   ),
                 const Spacer(),
-                // Year
-                if (book.year != null && book.year != 0)
+                // Tag extra (year/rating)
+                if (book.tagExtra != null && book.tagExtra!.isNotEmpty)
                   Text(
-                    '${book.year}',
+                    book.tagExtra!,
                     style: TextStyle(
                       color: cs.onSurfaceVariant,
                       fontSize: 11,
