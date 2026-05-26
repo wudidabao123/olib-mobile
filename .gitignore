@@ -1,5 +1,5 @@
 # Sensitive — do not track
-olib-api/
+reference/*
 
 # Miscellaneous
 *.class
