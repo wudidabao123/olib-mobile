@@ -313,25 +313,17 @@ jobs:
             fi
             # 类型路由
             if echo "$subject" | grep -qE "^(feat|enhance)(\(|:)"; then
-              FEATURES="$FEATURES
-$(format_line "$subject")"
+              FEATURES="$(printf '%s\n%s' "$FEATURES" "$(format_line "$subject")")"
             elif echo "$subject" | grep -qE "^fix(\(|:)"; then
-              FIXES="$FIXES
-$(format_line "$subject")"
+              FIXES="$(printf '%s\n%s' "$FIXES" "$(format_line "$subject")")"
             elif echo "$subject" | grep -qE "^(style|perf)(\(|:)"; then
-              STYLES="$STYLES
-$(format_line "$subject")"
+              STYLES="$(printf '%s\n%s' "$STYLES" "$(format_line "$subject")")"
             elif echo "$subject" | grep -qE "^refactor(\(|:)"; then
-              # refactor 默认归 "体验打磨"（user-visible refactor 多归这里）
-              STYLES="$STYLES
-$(format_line "$subject")"
+              STYLES="$(printf '%s\n%s' "$STYLES" "$(format_line "$subject")")"
             elif echo "$subject" | grep -qE "^(chore|ci|build|docs|test)(\(|:)"; then
-              # 内务类全丢
               continue
             else
-              # 无 prefix 老 commit，按"新功能"归（保守）
-              FEATURES="$FEATURES
-- $subject"
+              FEATURES="$(printf '%s\n%s' "$FEATURES" "- $subject")"
             fi
           done < <(git log --no-merges --pretty=format:"%s" "$RANGE" 2>/dev/null)
 
