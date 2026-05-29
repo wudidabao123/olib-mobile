@@ -22,7 +22,7 @@ class UpdateService {
 
   /// 下载入口 — 临时占位，切到网盘后改这里
   /// 例如：'https://pan.quark.cn/s/xxx'
-  static const String _downloadUrl = 'https://bookbook.space/';
+  static const String _downloadUrl = 'https://www.11xy.cn/projects/olib-mobile';
 
   static const String _lastCheckKey = 'last_update_check';
   static const String _dismissedVersionKey = 'dismissed_version';
