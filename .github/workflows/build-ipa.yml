@@ -11,11 +11,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Flutter
+      - name: Setup Flutter (master)
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
-          flutter-version: '3.32.0'
+          channel: 'master'
 
       - name: Install dependencies
         run: flutter pub get
